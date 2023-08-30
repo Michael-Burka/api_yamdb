@@ -6,10 +6,6 @@ SLUG_MAX_LENGTH = 50
 NAME_MAX_LENGTH = 150
 
 
-class User(AbstractUser):
-    pass 
-
-
 class Category(models.Model):
     name = models.CharField(
             max_length=NAME_MAX_LENGTH,
