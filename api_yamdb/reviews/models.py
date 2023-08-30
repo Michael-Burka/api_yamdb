@@ -1,9 +1,7 @@
-from enum import unique
-from django.contrib.auth.models import AbstractUser
 from django.db import models
 
 SLUG_MAX_LENGTH = 50
-NAME_MAX_LENGTH = 150
+NAME_MAX_LENGTH = 256
 
 
 class Category(models.Model):
@@ -50,7 +48,7 @@ class Genre(models.Model):
 
 class Title(models.Model):
     name = models.CharField(
-            max_length=256,
+            max_length=NAME_MAX_LENGTH,
             verbose_name='Название произведения',
             help_text='Введите название произведения',
             db_index=True,
@@ -68,13 +66,13 @@ class Title(models.Model):
             )
     category = models.ForeignKey(
             Category,
+            null=True,
             on_delete=models.SET_NULL,
             verbose_name='Категория',
             help_text='Выберите категорию произведения',
             )
     genre = models.ManyToManyField(
             Genre,
-            null=True,
             verbose_name='Жанр',
             help_text='Выберите жанр произведения',
             )
