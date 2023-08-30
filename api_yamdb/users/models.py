@@ -9,7 +9,9 @@ ADMIN = 'admin'
 
 
 class User(AbstractUser):
-
+    """
+    Модель пользователя. Расширяет стандартную модель AbstractUser.
+    """
     ROLE_CHOICES = (
         (USER, USER),
         (MODERATOR, MODERATOR),
@@ -41,6 +43,9 @@ class User(AbstractUser):
     USERNAME_FIELDS = 'email'
 
     def __str__(self):
+        """
+        Строковое представление модели.
+        """
         return str(self.username)
 
     @property
