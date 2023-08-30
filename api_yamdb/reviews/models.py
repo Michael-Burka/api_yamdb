@@ -82,6 +82,14 @@ class Title(models.Model):
             verbose_name='Жанр',
             help_text='Выберите жанр произведения',
             )
+    
+    def __str__(self) -> str:
+        return self.name
+
+    class Meta:
+        verbose_name = 'Произведение'
+        verbose_name_plural = 'Произведения'
+
 
 class Review(models.Model):
     pass
