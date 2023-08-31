@@ -1,27 +1,27 @@
 import logging
 import random
-
-from django.core.validators import RegexValidator
-from rest_framework_simplejwt.tokens import RefreshToken
 from smtplib import SMTPException
+
+from rest_framework_simplejwt.tokens import AccessToken
+
 from django.conf import settings
 from django.core.mail import send_mail
+from django.core.validators import RegexValidator
 
 
-def get_tokens_for_user(user):
-    """Генерирует и возвращает токены для заданного пользователя.
+def get_token(user):
+    """Генерирует и возвращает токен для заданного пользователя.
 
     Args:
         user: Пользователь, для которого необходимо сгенерировать токен.
 
     Returns:
-        dict: Словарь, содержащий обновленный и доступный токены.
+        dict: Словарь, содержащий только доступный токен, без refresh.
     """
-    refresh = RefreshToken.for_user(user)
+    access = AccessToken.for_user(user)
 
     return {
-        'refresh': str(refresh),
-        'access': str(refresh.access_token),
+        'access': str(access),
     }
 
 

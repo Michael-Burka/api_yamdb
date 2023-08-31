@@ -1,29 +1,30 @@
 from django.db import IntegrityError
 
 from rest_framework import permissions, status, viewsets
-from rest_framework.decorators import action
+from rest_framework.decorators import action  # для кастомных операций
 from rest_framework.filters import SearchFilter
 from rest_framework.response import Response
-from rest_framework.views import APIView
+from rest_framework.views import APIView  # для кастомных эндпоинтов
 
 from api.permissions import AdminWriteOnly
 from api.serializers import (
     EmailActivationSerializer, AdminSerializer,
     SignUpSerializer, UserProfileSerializer
 )
-from users.authorization import get_tokens_for_user, send_mail_with_code
+from users.authorization import get_token, send_mail_with_code
 from users.models import User
 
 
 class SignUp(APIView):
     """Представление для регистрации новых пользователей."""
-    permission_classes = (permissions.AllowAny,)
+    permission_classes = (permissions.AllowAny,)  # доступ для всех
 
     def post(self, request):
         """Регистрирует нового пользователя и отправляет код подтверждения."""
         serializer = SignUpSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         try:
+            # Пытаемся получить/создать пользователя с указанными именем/почтой
             user = User.objects.get_or_create(
                 username=serializer.validated_data['username'],
                 email=serializer.validated_data['email'],
@@ -48,7 +49,7 @@ class EmailActivation(APIView):
         serializer.is_valid(raise_exception=True)
         user = User.objects.get(
             username=serializer.validated_data['username'])
-        token = get_tokens_for_user(user)
+        token = get_token(user)
         return Response({'token': token},
                         status=status.HTTP_201_CREATED)
 
@@ -57,6 +58,7 @@ class UserViewSet(viewsets.ModelViewSet):
     """Представление для управления пользователями."""
     queryset = User.objects.all()
     serializer_class = AdminSerializer
+    # Только администраторы могут изменять данные.
     permission_classes = (AdminWriteOnly,)
     filter_backends = (SearchFilter,)
     lookup_field = 'username'
@@ -69,9 +71,13 @@ class UserViewSet(viewsets.ModelViewSet):
         permission_classes=(permissions.IsAuthenticated,)
     )
     def my_profile(self, request):
-        """Позволяет просматривать и редактировать свой профиль."""
+        """
+        Позволяет просматривать и редактировать свой профиль.
+        Доступно только аутентифицированным пользователям.
+        """
         serializer = UserProfileSerializer(request.user)
         if request.method == 'PATCH':
+            # При PATCH-запросе профиль можно частично обновить.
             serializer = UserProfileSerializer(
                 request.user, data=request.data, partial=True
             )
