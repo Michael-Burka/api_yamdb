@@ -48,7 +48,6 @@ class User(AbstractUser):
     )
 
     REQUIRED_FIELDS = ['email']
-    USERNAME_FIELD = 'email'
 
     @property
     def is_admin(self):
