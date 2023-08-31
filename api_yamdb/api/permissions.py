@@ -20,16 +20,6 @@ class AdminWriteOnly(permissions.BasePermission):
         )
 
 
-class StaffReadOnlyOrAdminWrite(permissions.BasePermission):
-    """Доступ на чтение для персонала, запись только для администратора."""
-
-    def has_permission(self, request, view):
-        return (
-            request.method in permissions.SAFE_METHODS
-            or (request.user.is_authenticated and request.user.is_admin)
-        )
-
-
 class AuthorOrStaffWriteOrReadOnly(permissions.BasePermission):
     """Запись для автора, модератора и администратора; чтение для всех."""
 
