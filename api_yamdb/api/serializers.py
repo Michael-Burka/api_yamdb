@@ -3,7 +3,8 @@ from django.http import Http404
 from rest_framework import serializers
 
 from users.models import User, ROLE_CHOICES
-
+from reviews.models import Category, Genre, Title
+from reviews.validators import validate_slug 
 
 def check_username_exists(username):
     """Проверка наличия пользователя с заданным именем пользователя.
@@ -96,3 +97,32 @@ class UserProfileSerializer(serializers.ModelSerializer):
             'last_name', 'bio', 'role',
         )
         read_only_fields = ('username', 'email', 'role',)
+
+
+class CategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Category
+        exclude = ('id',)
+
+
+class GenreSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Genre
+        exclude = ('id',)
+
+
+class TitleSerializer(serializers.ModelSerializer):
+    genre = serializers.SlugRelatedField(
+        queryset=Genre.objects.all(),
+        slug_field='slug',
+        many=True,
+        validators=[validate_slug],
+    )
+    category = serializers.SlugRelatedField(
+        queryset=Category.objects.all(),
+        slug_field='slug',
+        validators=[validate_slug],
+    )
+    class Meta:
+        fields =  ('id', 'name', 'year', 'description', 'genre', 'category')
+        model = Title

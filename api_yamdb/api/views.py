@@ -6,11 +6,17 @@ from rest_framework.filters import SearchFilter
 from rest_framework.response import Response
 from rest_framework.views import APIView  # для кастомных эндпоинтов
 
-from api.permissions import AdminWriteOnly
+from api.permissions import AdminWriteOnly, IsAdminOrReadOnly
 from api.serializers import (
-    EmailActivationSerializer, AdminSerializer,
-    SignUpSerializer, UserProfileSerializer
+  EmailActivationSerializer,
+  AdminSerializer,
+  SignUpSerializer,
+  UserProfileSerializer,
+  CategorySerializer,
+  GenreSerializer,
+  TitleSerializer
 )
+from reviews.models import Category, Genre, Title
 from users.authorization import get_token, send_mail_with_code
 from users.models import User
 
@@ -85,3 +91,25 @@ class UserViewSet(viewsets.ModelViewSet):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class CategoryViewSet(viewsets.ModelViewSet):
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+    permission_classes = (IsAdminOrReadOnly,)
+    lookup_field = 'slug'
+    search_fields = ('name',)
+
+
+class GenreViewSet(viewsets.ModelViewSet):
+    queryset = Genre.objects.all()
+    serializer_class = GenreSerializer
+    permission_classes = (IsAdminOrReadOnly,)
+    lookup_field = 'slug'
+    search_fields = ('name',)
+
+
+class TitleViewSet(viewsets.ModelViewSet):
+    queryset = Title.objects.all()
+    serializer_class = TitleSerializer
+    permission_classes = (IsAdminOrReadOnly,)
