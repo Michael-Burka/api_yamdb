@@ -1,5 +1,7 @@
 from django.db import models
 
+from .validators import validate_slug, valildate_year
+
 SLUG_MAX_LENGTH = 50
 NAME_MAX_LENGTH = 256
 
@@ -15,6 +17,7 @@ class Category(models.Model):
             verbose_name='Слаг категории',
             unique=True,
             help_text='Введите слаг категории',
+            validators=[validate_slug],
             )
 
     def __str__(self) -> str:
@@ -36,6 +39,7 @@ class Genre(models.Model):
             verbose_name='Слаг жанра',
             unique=True,
             help_text='Введите слаг жанра',
+            validators=[validate_slug],
             )
 
     def __str__(self) -> str:
@@ -54,9 +58,10 @@ class Title(models.Model):
             db_index=True,
             )
     year = models.PositiveSmallIntegerField(
-            verbose_name='Год релиза',
-            help_text='Введите год релиза произведения',
+            verbose_name='Год выпуска',
+            help_text='Введите год выпуска произведения',
             db_index=True,
+            validators=[valildate_year],
             )
     description = models.TextField(
             verbose_name='Описание произведения',
