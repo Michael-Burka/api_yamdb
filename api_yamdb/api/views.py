@@ -1,6 +1,6 @@
 from django.db import IntegrityError
 
-from rest_framework import permissions, status, viewsets
+from rest_framework import permissions, status, viewsets, mixins
 from rest_framework.decorators import action  # для кастомных операций
 from rest_framework.filters import SearchFilter
 from rest_framework.response import Response
@@ -93,23 +93,47 @@ class UserViewSet(viewsets.ModelViewSet):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-class CategoryViewSet(viewsets.ModelViewSet):
+class CategoryViewSet(
+    viewsets.GenericViewSet, 
+    mixins.ListModelMixin,
+    mixins.CreateModelMixin,
+    mixins.DestroyModelMixin,
+):
+    """
+    Представление для управления категориями.
+    Позволяет просматривать, создавать и удалять категории.
+    """
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     permission_classes = (IsAdminOrReadOnly,)
+    filter_backends = (SearchFilter,)
     lookup_field = 'slug'
     search_fields = ('name',)
 
 
-class GenreViewSet(viewsets.ModelViewSet):
+class GenreViewSet(
+        viewsets.GenericViewSet,
+        mixins.ListModelMixin,
+        mixins.CreateModelMixin,
+        mixins.DestroyModelMixin,
+):
+    """
+    Представление для управления жанрами.
+    Позволяет просматривать, создавать и удалять жанры.
+    """
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
     permission_classes = (IsAdminOrReadOnly,)
+    filter_backends = (SearchFilter,)
     lookup_field = 'slug'
     search_fields = ('name',)
 
 
 class TitleViewSet(viewsets.ModelViewSet):
+    """
+    Представление для управления произведениями.
+    Позволяет просматривать, создавать, изменять и удалять произведения.
+    """
     queryset = Title.objects.all()
     serializer_class = TitleSerializer
     permission_classes = (IsAdminOrReadOnly,)
