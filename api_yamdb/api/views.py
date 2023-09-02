@@ -7,13 +7,13 @@ from rest_framework.response import Response
 from rest_framework.views import APIView  # для кастомных эндпоинтов
 
 from api.permissions import AdminWriteOnly, IsAdminOrReadOnly
-from reviews.models import Category, Genre, Title
+from reviews.models import Category, Genre, Title, Review
 from users.authorization import get_token, send_mail_with_code
 from users.models import User
 from api.serializers import (
     EmailActivationSerializer, AdminSerializer, SignUpSerializer,
     UserProfileSerializer, CategorySerializer, GenreSerializer,
-    TitleSerializer)
+    TitleSerializer, ReviewSerializer)
 
 
 class SignUp(APIView):
@@ -127,4 +127,13 @@ class TitleViewSet(viewsets.ModelViewSet):
     """
     queryset = Title.objects.all()
     serializer_class = TitleSerializer
+    permission_classes = (IsAdminOrReadOnly,)
+
+
+class ReviewViewSet(viewsets.ModelViewSet):
+    """
+    Представление для управления отзывов.
+    """
+    queryset = Review.objects.all()
+    serializer_class = ReviewSerializer
     permission_classes = (IsAdminOrReadOnly,)
