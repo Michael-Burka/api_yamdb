@@ -119,7 +119,7 @@ class Review(models.Model):
         db_index=True
     )
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.text[:10]
 
     class Meta:
@@ -149,7 +149,7 @@ class Comment(models.Model):
         db_index=True
     )
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.text[:10]
 
     class Meta:

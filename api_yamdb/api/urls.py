@@ -4,7 +4,7 @@ from rest_framework.routers import SimpleRouter
 from api.views import (
     EmailActivation, UserViewSet, SignUp,
     TitleViewSet, GenreViewSet, CategoryViewSet,
-    ReviewViewSet
+    ReviewViewSet, CommentViewSet
 )
 
 app_name = 'api'
@@ -20,7 +20,7 @@ router_v1.register(
 )
 router_v1.register(
     r'titles/(?P<title_id>\d+)/reviews/(?P<review_id>\d+)/comments',
-    TitleViewSet, basename='comments'  # затычка TitleViewSet
+    CommentViewSet, basename='comments'
 )
 
 # Определение URL-маршрутов для API

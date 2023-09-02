@@ -7,14 +7,17 @@ from rest_framework.filters import SearchFilter
 from rest_framework.response import Response
 from rest_framework.views import APIView  # для кастомных эндпоинтов
 
-from api.permissions import AdminWriteOnly, IsAdminOrReadOnly, AuthorOrStaffWriteOrReadOnly
 from reviews.models import Category, Genre, Title
 from users.authorization import get_token, send_mail_with_code
 from users.models import User
+from api.permissions import (
+    AdminWriteOnly, IsAdminOrReadOnly, AuthorOrStaffWriteOrReadOnly
+)
 from api.serializers import (
     EmailActivationSerializer, AdminSerializer, SignUpSerializer,
     UserProfileSerializer, CategorySerializer, GenreSerializer,
-    TitleSerializer, ReviewSerializer)
+    TitleSerializer, ReviewSerializer
+)
 
 
 class SignUp(APIView):
@@ -146,3 +149,7 @@ class ReviewViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
+
+
+class CommentViewSet(viewsets.ModelViewSet):
+    pass
