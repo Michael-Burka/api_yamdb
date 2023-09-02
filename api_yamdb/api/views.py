@@ -7,18 +7,13 @@ from rest_framework.response import Response
 from rest_framework.views import APIView  # для кастомных эндпоинтов
 
 from api.permissions import AdminWriteOnly, IsAdminOrReadOnly
-from api.serializers import (
-  EmailActivationSerializer,
-  AdminSerializer,
-  SignUpSerializer,
-  UserProfileSerializer,
-  CategorySerializer,
-  GenreSerializer,
-  TitleSerializer
-)
 from reviews.models import Category, Genre, Title
 from users.authorization import get_token, send_mail_with_code
 from users.models import User
+from api.serializers import (
+    EmailActivationSerializer, AdminSerializer, SignUpSerializer,
+    UserProfileSerializer, CategorySerializer, GenreSerializer,
+    TitleSerializer)
 
 
 class SignUp(APIView):
@@ -94,10 +89,8 @@ class UserViewSet(viewsets.ModelViewSet):
 
 
 class CategoryViewSet(
-    viewsets.GenericViewSet, 
-    mixins.ListModelMixin,
-    mixins.CreateModelMixin,
-    mixins.DestroyModelMixin,
+    viewsets.GenericViewSet, mixins.ListModelMixin,
+    mixins.CreateModelMixin, mixins.DestroyModelMixin,
 ):
     """
     Представление для управления категориями.
@@ -112,10 +105,8 @@ class CategoryViewSet(
 
 
 class GenreViewSet(
-        viewsets.GenericViewSet,
-        mixins.ListModelMixin,
-        mixins.CreateModelMixin,
-        mixins.DestroyModelMixin,
+    viewsets.GenericViewSet, mixins.ListModelMixin,
+    mixins.CreateModelMixin, mixins.DestroyModelMixin,
 ):
     """
     Представление для управления жанрами.
