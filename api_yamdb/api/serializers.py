@@ -3,7 +3,7 @@ from django.http import Http404
 from rest_framework import serializers
 
 from users.models import User, ROLE_CHOICES
-from reviews.models import Category, Genre, Title
+from reviews.models import Category, Genre, Title, Review
 from reviews.validators import validate_slug
 
 
@@ -128,3 +128,15 @@ class TitleSerializer(serializers.ModelSerializer):
     class Meta:
         fields = ('id', 'name', 'year', 'description', 'genre', 'category')
         model = Title
+
+
+class ReviewSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Review
+        fields = ('id', 'text', 'author', 'score', 'pub_date')
+        read_only_fields = ('author',)
+
+
+class CommentSerializer(serializers.ModelSerializer):
+    pass
