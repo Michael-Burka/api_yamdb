@@ -3,7 +3,8 @@ from rest_framework.routers import SimpleRouter
 
 from api.views import (
     EmailActivation, UserViewSet, SignUp,
-    TitleViewSet, GenreViewSet, CategoryViewSet)
+    TitleViewSet, GenreViewSet, CategoryViewSet,
+    ReviewViewSet)
 
 app_name = 'api'
 
@@ -14,7 +15,7 @@ router_v1.register('titles', TitleViewSet, basename='titles')
 router_v1.register('categories', CategoryViewSet, basename='categories')
 router_v1.register(
     r'titles/(?P<title_id>\d+)/reviews',
-    TitleViewSet, basename='reviews'  # затычка TitleViewSet
+    ReviewViewSet, basename='reviews'
 )
 router_v1.register(
     r'titles/(?P<title_id>\d+)/reviews/(?P<review_id>\d+)/comments',
