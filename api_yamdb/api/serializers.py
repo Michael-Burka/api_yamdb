@@ -4,7 +4,8 @@ from rest_framework import serializers
 
 from users.models import User, ROLE_CHOICES
 from reviews.models import Category, Genre, Title
-from reviews.validators import validate_slug 
+from reviews.validators import validate_slug
+
 
 def check_username_exists(username):
     """Проверка наличия пользователя с заданным именем пользователя.
@@ -123,6 +124,7 @@ class TitleSerializer(serializers.ModelSerializer):
         slug_field='slug',
         validators=[validate_slug],
     )
+
     class Meta:
-        fields =  ('id', 'name', 'year', 'description', 'genre', 'category')
+        fields = ('id', 'name', 'year', 'description', 'genre', 'category')
         model = Title
