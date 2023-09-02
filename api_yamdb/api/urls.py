@@ -2,16 +2,24 @@ from django.urls import include, path
 from rest_framework.routers import SimpleRouter
 
 from api.views import (
-    EmailActivation, TitleViewSet, GenreViewSet,
-    UserViewSet, SignUp, CategoryViewSet)
+    EmailActivation, UserViewSet, SignUp,
+    TitleViewSet, GenreViewSet, CategoryViewSet)
 
 app_name = 'api'
 
 router_v1 = SimpleRouter()
 router_v1.register('users', UserViewSet, basename='users')
-router_v1.register('categories', CategoryViewSet, basename='categories')
 router_v1.register('genres', GenreViewSet, basename='genres')
 router_v1.register('titles', TitleViewSet, basename='titles')
+router_v1.register('categories', CategoryViewSet, basename='categories')
+router_v1.register(
+    r'titles/(?P<title_id>\d+)/reviews',
+    TitleViewSet, basename='reviews'  # затычка TitleViewSet
+)
+router_v1.register(
+    r'titles/(?P<title_id>\d+)/reviews/(?P<review_id>\d+)/comments',
+    TitleViewSet, basename='comments'  # затычка TitleViewSet
+)
 
 # Определение URL-маршрутов для API
 urlpatterns = [
