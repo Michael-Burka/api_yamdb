@@ -1,4 +1,5 @@
 from django.db import IntegrityError
+from django.shortcuts import get_object_or_404
 
 from rest_framework import permissions, status, viewsets, mixins
 from rest_framework.decorators import action  # для кастомных операций
@@ -6,8 +7,8 @@ from rest_framework.filters import SearchFilter
 from rest_framework.response import Response
 from rest_framework.views import APIView  # для кастомных эндпоинтов
 
-from api.permissions import AdminWriteOnly, IsAdminOrReadOnly
-from reviews.models import Category, Genre, Title, Review
+from api.permissions import AdminWriteOnly, IsAdminOrReadOnly, AuthorOrStaffWriteOrReadOnly
+from reviews.models import Category, Genre, Title
 from users.authorization import get_token, send_mail_with_code
 from users.models import User
 from api.serializers import (
@@ -134,6 +135,14 @@ class ReviewViewSet(viewsets.ModelViewSet):
     """
     Представление для управления отзывов.
     """
-    queryset = Review.objects.all()
     serializer_class = ReviewSerializer
-    permission_classes = (IsAdminOrReadOnly,)
+    permission_classes = (AuthorOrStaffWriteOrReadOnly,)
+
+    def get_title(self):
+        return get_object_or_404(Title, id=self.kwargs.get('title_id'))
+
+    def get_queryset(self):
+        return self.get_title().reviews.all()
+
+    def perform_create(self, serializer):
+        serializer.save(author=self.request.user)

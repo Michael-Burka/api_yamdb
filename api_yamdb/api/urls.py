@@ -4,7 +4,8 @@ from rest_framework.routers import SimpleRouter
 from api.views import (
     EmailActivation, UserViewSet, SignUp,
     TitleViewSet, GenreViewSet, CategoryViewSet,
-    ReviewViewSet)
+    ReviewViewSet
+)
 
 app_name = 'api'
 
