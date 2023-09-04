@@ -1,15 +1,6 @@
 from rest_framework import permissions
 
 
-class OwnerOrAdminOrReadOnly(permissions.BasePermission):
-    """Собcтвенник, администратор или только чтение."""
-
-    def has_object_permission(self, request, view, obj):
-        return (
-            request.user.is_superuser or request.user.is_admin
-            or obj == request.user)
-
-
 class AdminWriteOnly(permissions.BasePermission):
     """Изменение доступно только администратору."""
 
@@ -36,10 +27,9 @@ class AdminOrReadOnly(AdminWriteOnly):
     """
     Доступ на запись только для администратора.
     Для остальных - только чтение.
-    """ 
+    """
     def has_permission(self, request, view):
         return (
             request.method in permissions.SAFE_METHODS
             or super().has_permission(request, view)
         )
-
