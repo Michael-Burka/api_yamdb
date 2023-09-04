@@ -132,9 +132,9 @@ class TitleViewSet(viewsets.ModelViewSet):
     Представление для управления произведениями.
     Позволяет просматривать, создавать, изменять и удалять произведения.
     """
-    queryset = (
-        Title.objects.annotate(rating=Avg('reviews__score')).order_by('name')
-    )
+    queryset = (Title.objects
+                .annotate(rating=Avg('reviews__score'))
+                .order_by('name'))
     permission_classes = (AdminOrReadOnly,)
     filter_backends = (DjangoFilterBackend,)
     filterset_class = TitleFilter
@@ -196,4 +196,7 @@ class CommentViewSet(viewsets.ModelViewSet):
         return self.get_review().comments.all()
 
     def perform_create(self, serializer):
-        serializer.save(author=self.request.user, review=self.get_review())
+        serializer.save(
+                author=self.request.user,
+                review=self.get_review()
+        )
