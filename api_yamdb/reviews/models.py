@@ -100,23 +100,20 @@ class Review(models.Model):
         verbose_name='Произведение',
         on_delete=models.CASCADE,
         related_name='reviews',
-        db_index=True
     )
     author = models.ForeignKey(
         User,
         verbose_name='Автор',
         on_delete=models.CASCADE,
         related_name='reviews',
-        db_index=True
     )
     score = models.PositiveSmallIntegerField(
         verbose_name='Оценка',
-        validators=(MinValueValidator(1), MaxValueValidator(10))
+        validators=(MinValueValidator(1), MaxValueValidator(10)),
     )
     pub_date = models.DateTimeField(
         verbose_name='Дата публикации',
         auto_now_add=True,
-        db_index=True
     )
 
     def __str__(self) -> str:
@@ -125,6 +122,12 @@ class Review(models.Model):
     class Meta:
         verbose_name = 'Отзыв'
         verbose_name_plural = 'Отзывы'
+        constraints = [
+            models.UniqueConstraint(
+                fields=['title', 'author'],
+                name='unique_author_title_review',
+            )
+        ]
 
 
 class Comment(models.Model):
