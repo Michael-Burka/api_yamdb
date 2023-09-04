@@ -1,22 +1,26 @@
 from django.db import IntegrityError
 from django.shortcuts import get_object_or_404
+from django_filters.rest_framework import DjangoFilterBackend
+from django.db.models import Avg
+from django.core.exceptions import ValidationError
 
 from rest_framework import permissions, status, viewsets, mixins
-from rest_framework.decorators import action  # для кастомных операций
+from rest_framework.decorators import action 
 from rest_framework.filters import SearchFilter
 from rest_framework.response import Response
-from rest_framework.views import APIView  # для кастомных эндпоинтов
+from rest_framework.views import APIView
 
-from reviews.models import Category, Genre, Title
+from api.filters import TitleFilter
+from reviews.models import Category, Genre, Title, Review
 from users.authorization import get_token, send_mail_with_code
 from users.models import User
 from api.permissions import (
-    AdminWriteOnly, IsAdminOrReadOnly, AuthorOrStaffWriteOrReadOnly
+    AdminWriteOnly, AdminOrReadOnly, AuthorOrStaffWriteOrReadOnly
 )
 from api.serializers import (
     EmailActivationSerializer, AdminSerializer, SignUpSerializer,
     UserProfileSerializer, CategorySerializer, GenreSerializer,
-    TitleSerializer, ReviewSerializer
+    TitleSerializer, TitleReadSerializer, ReviewSerializer, CommentSerializer
 )
 
 
@@ -102,7 +106,7 @@ class CategoryViewSet(
     """
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
-    permission_classes = (IsAdminOrReadOnly,)
+    permission_classes = (AdminOrReadOnly,)
     filter_backends = (SearchFilter,)
     lookup_field = 'slug'
     search_fields = ('name',)
@@ -118,7 +122,7 @@ class GenreViewSet(
     """
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
-    permission_classes = (IsAdminOrReadOnly,)
+    permission_classes = (AdminOrReadOnly,)
     filter_backends = (SearchFilter,)
     lookup_field = 'slug'
     search_fields = ('name',)
@@ -129,9 +133,35 @@ class TitleViewSet(viewsets.ModelViewSet):
     Представление для управления произведениями.
     Позволяет просматривать, создавать, изменять и удалять произведения.
     """
-    queryset = Title.objects.all()
-    serializer_class = TitleSerializer
-    permission_classes = (IsAdminOrReadOnly,)
+    queryset = Title.objects.annotate(rating=Avg('reviews__score')).order_by('name')
+    permission_classes = (AdminOrReadOnly,)
+    filter_backends = (DjangoFilterBackend,)
+    filterset_class = TitleFilter
+    serializer_class = TitleSerializer 
+    http_method_names = ['get', 'post', 'delete', 'patch']
+
+    def get_serializer_class(self):
+        if self.action in ('list', 'retrieve'):
+            return TitleReadSerializer
+        return TitleSerializer
+
+    def update(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(
+                instance,
+                data=request.data,
+                partial=True
+        )
+        serializer.is_valid(raise_exception=True)
+
+        if len(serializer.validated_data.get('name', '')) > 256:
+            raise ValidationError('Name cannot be longer than 256 characters.')
+
+        self.perform_update(serializer)
+        return Response(serializer.data)
+
+    def partial_update(self, request, *args, **kwargs):
+        return super().partial_update(request, *args, **kwargs)
 
 
 class ReviewViewSet(viewsets.ModelViewSet):
@@ -140,6 +170,7 @@ class ReviewViewSet(viewsets.ModelViewSet):
     """
     serializer_class = ReviewSerializer
     permission_classes = (AuthorOrStaffWriteOrReadOnly,)
+    http_method_names = ['get', 'post', 'delete', 'patch']
 
     def get_title(self):
         return get_object_or_404(Title, id=self.kwargs.get('title_id'))
@@ -148,8 +179,29 @@ class ReviewViewSet(viewsets.ModelViewSet):
         return self.get_title().reviews.all()
 
     def perform_create(self, serializer):
-        serializer.save(author=self.request.user)
+        serializer.save(
+                author=self.request.user,
+                title=self.get_title()
+        )
 
 
 class CommentViewSet(viewsets.ModelViewSet):
-    pass
+    """
+    Представление для управления комментариями.
+    """
+    serializer_class = CommentSerializer
+    permission_classes = (AuthorOrStaffWriteOrReadOnly,)
+    http_method_names = ['get', 'post', 'delete', 'patch']
+
+    def get_review(self):
+        return get_object_or_404(Review, id=self.kwargs.get('review_id'))
+
+    def get_queryset(self):
+                            return self.get_review().comments.all()
+
+    def perform_create(self, serializer):
+        serializer.save(
+                author=self.request.user,
+                review=self.get_review()
+        )
+
