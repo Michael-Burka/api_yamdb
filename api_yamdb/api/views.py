@@ -1,27 +1,25 @@
+from django.core.exceptions import ValidationError
 from django.db import IntegrityError
+from django.db.models import Avg
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
-from django.db.models import Avg
-from django.core.exceptions import ValidationError
-
-from rest_framework import permissions, status, viewsets, mixins
-from rest_framework.decorators import action 
+from rest_framework import mixins, permissions, status, viewsets
+from rest_framework.decorators import action
 from rest_framework.filters import SearchFilter
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from api.filters import TitleFilter
-from reviews.models import Category, Genre, Title, Review
+from api.permissions import (AdminOrReadOnly, AdminWriteOnly,
+                             AuthorOrStaffWriteOrReadOnly)
+from api.serializers import (AdminSerializer, CategorySerializer,
+                             CommentSerializer, EmailActivationSerializer,
+                             GenreSerializer, ReviewSerializer,
+                             SignUpSerializer, TitleReadSerializer,
+                             TitleSerializer, UserProfileSerializer)
+from reviews.models import Category, Genre, Review, Title
 from users.authorization import get_token, send_mail_with_code
 from users.models import User
-from api.permissions import (
-    AdminWriteOnly, AdminOrReadOnly, AuthorOrStaffWriteOrReadOnly
-)
-from api.serializers import (
-    EmailActivationSerializer, AdminSerializer, SignUpSerializer,
-    UserProfileSerializer, CategorySerializer, GenreSerializer,
-    TitleSerializer, TitleReadSerializer, ReviewSerializer, CommentSerializer
-)
 
 
 class SignUp(APIView):

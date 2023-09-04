@@ -1,8 +1,8 @@
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
-from django.core.validators import MinValueValidator, MaxValueValidator
 
-from users.models import User
 from reviews.validators import validate_slug, valildate_year
+from users.models import User
 
 SLUG_MAX_LENGTH = 50
 NAME_MAX_LENGTH = 256

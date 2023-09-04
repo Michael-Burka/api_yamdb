@@ -1,11 +1,10 @@
 from django.core.exceptions import ValidationError
-from django.utils.translation import gettext_lazy as _
 from django.http import Http404
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
-from rest_framework import permissions
-from users.models import User, ROLE_CHOICES
-from reviews.models import Category, Genre, Title, Review, Comment
+
+from reviews.models import Category, Comment, Genre, Review, Title
+from users.models import ROLE_CHOICES, User
 
 
 def check_username_exists(username):
@@ -134,16 +133,16 @@ class TitleReadSerializer(serializers.ModelSerializer):
     rating = serializers.FloatField()
 
     class Meta:
-        fields =  (
-                'id',
-                'name',
-                'year',
-                'description',
-                'genre',
-                'category',
-                'rating',
+        fields = (
+            'id',
+            'name',
+            'year',
+            'description',
+            'genre',
+            'category',
+            'rating',
         )
-        read_only_fields =  fields 
+        read_only_fields = fields
         model = Title
 
 
@@ -188,4 +187,3 @@ class CommentSerializer(serializers.ModelSerializer):
     class Meta:
         fields = ('id', 'text', 'author', 'pub_date')
         model = Comment
-
