@@ -2,11 +2,10 @@ import logging
 import random
 from smtplib import SMTPException
 
-from rest_framework_simplejwt.tokens import AccessToken
-
 from django.conf import settings
 from django.core.mail import send_mail
 from django.core.validators import RegexValidator
+from rest_framework_simplejwt.tokens import AccessToken
 
 
 def get_token(user):

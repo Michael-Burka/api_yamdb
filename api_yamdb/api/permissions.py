@@ -20,7 +20,7 @@ class AdminWriteOnly(permissions.BasePermission):
         )
 
 
-class AuthorOrStaffWriteOrReadOnly(permissions.BasePermission):
+class AuthorOrStaffWriteOrReadOnly(permissions.IsAuthenticatedOrReadOnly):
     """Запись для автора, модератора и администратора; чтение для всех."""
 
     def has_object_permission(self, request, view, obj):
@@ -32,7 +32,7 @@ class AuthorOrStaffWriteOrReadOnly(permissions.BasePermission):
         )
 
 
-class IsAdminOrReadOnly(AdminWriteOnly):
+class AdminOrReadOnly(AdminWriteOnly):
     """
     Доступ на запись только для администратора.
     Для остальных - только чтение.
