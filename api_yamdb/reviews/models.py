@@ -83,6 +83,7 @@ class Title(models.Model):
         Genre,
         verbose_name='Жанр',
         help_text='Выберите жанр произведения',
+        through='GenreTitle',
     )
 
     def __str__(self) -> str:
@@ -91,6 +92,21 @@ class Title(models.Model):
     class Meta:
         verbose_name = 'Произведение'
         verbose_name_plural = 'Произведения'
+
+
+class GenreTitle(models.Model):
+    title = models.ForeignKey(
+        Title,
+        null=True,
+        on_delete=models.SET_NULL,
+        verbose_name='Произведение',
+    )
+    genre = models.ForeignKey(
+        Genre,
+        null=True,
+        on_delete=models.SET_NULL,
+        verbose_name='Жанр',
+    )
 
 
 class Review(models.Model):
