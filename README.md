@@ -42,6 +42,11 @@ pip install -r requirements.txt
 python manage.py migrate
 ```
 
+При необходимости импортировать данные из csv файлов.
+```
+python manage.py csv_import
+```
+
 Запустить проект.
 ```
 python manage.py runserver
