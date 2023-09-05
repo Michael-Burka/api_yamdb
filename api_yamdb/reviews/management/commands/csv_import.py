@@ -7,7 +7,6 @@ from django.conf import settings
 from reviews.models import Category, Title, Comment, Genre, GenreTitle, Review
 from users.models import User
 
-
 class Command(BaseCommand):
     help = 'Import data from CSV files'
 
