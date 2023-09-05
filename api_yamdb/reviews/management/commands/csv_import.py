@@ -32,7 +32,8 @@ class Command(BaseCommand):
         self.stdout.write(self.style.SUCCESS('Data imported successfully'))
 
     def import_users(self):
-        users_csv_path = os.path.join(self.CSV_DIRECTORY, self.CSV_FILES['users'])
+        users_csv_path = os.path.join(
+            self.CSV_DIRECTORY, self.CSV_FILES['users'])
         with open(users_csv_path, 'r') as users_file:
             csv_reader = csv.DictReader(users_file)
             users_to_create = []
@@ -49,10 +50,12 @@ class Command(BaseCommand):
                         last_name=row['last_name']
                     ))
             User.objects.bulk_create(users_to_create)
-        self.stdout.write(self.style.SUCCESS('Users data imported successfully'))
+        self.stdout.write(self.style.SUCCESS(
+            'Users data imported successfully'))
 
     def import_categories(self):
-        category_csv_path = os.path.join(self.CSV_DIRECTORY, self.CSV_FILES['category'])
+        category_csv_path = os.path.join(
+            self.CSV_DIRECTORY, self.CSV_FILES['category'])
         with open(category_csv_path, 'r') as category_file:
             csv_reader = csv.DictReader(category_file)
             categories_to_create = []
@@ -63,10 +66,12 @@ class Command(BaseCommand):
                     slug=row['slug']
                 ))
             Category.objects.bulk_create(categories_to_create)
-        self.stdout.write(self.style.SUCCESS('Categories data imported successfully'))
+        self.stdout.write(self.style.SUCCESS(
+            'Categories data imported successfully'))
 
     def import_genres(self):
-        genre_csv_path = os.path.join(self.CSV_DIRECTORY, self.CSV_FILES['genre'])
+        genre_csv_path = os.path.join(
+            self.CSV_DIRECTORY, self.CSV_FILES['genre'])
         with open(genre_csv_path, 'r') as genre_file:
             csv_reader = csv.DictReader(genre_file)
             genres_to_create = []
@@ -77,10 +82,12 @@ class Command(BaseCommand):
                     slug=row['slug']
                 ))
             Genre.objects.bulk_create(genres_to_create)
-        self.stdout.write(self.style.SUCCESS('Genres data imported successfully'))
+        self.stdout.write(self.style.SUCCESS(
+            'Genres data imported successfully'))
 
     def import_titles(self):
-        titles_csv_path = os.path.join(self.CSV_DIRECTORY, self.CSV_FILES['titles'])
+        titles_csv_path = os.path.join(
+            self.CSV_DIRECTORY, self.CSV_FILES['titles'])
         with open(titles_csv_path, 'r') as title_file:
             csv_reader = csv.DictReader(title_file)
             titles_to_create = []
@@ -92,10 +99,12 @@ class Command(BaseCommand):
                     category_id=row['category'],
                 ))
             Title.objects.bulk_create(titles_to_create)
-        self.stdout.write(self.style.SUCCESS('Titles data imported successfully'))
+        self.stdout.write(self.style.SUCCESS(
+            'Titles data imported successfully'))
 
     def import_genre_titles(self):
-        genre_title_csv_path = os.path.join(self.CSV_DIRECTORY, self.CSV_FILES['genre_title'])
+        genre_title_csv_path = os.path.join(
+            self.CSV_DIRECTORY, self.CSV_FILES['genre_title'])
         with open(genre_title_csv_path, 'r') as genre_title_file:
             csv_reader = csv.DictReader(genre_title_file)
             genre_titles_to_create = []
@@ -106,10 +115,12 @@ class Command(BaseCommand):
                     genre_id=row['genre_id'],
                 ))
             GenreTitle.objects.bulk_create(genre_titles_to_create)
-        self.stdout.write(self.style.SUCCESS('Genre Titles data imported successfully'))
+        self.stdout.write(self.style.SUCCESS(
+            'Genre Titles data imported successfully'))
 
     def import_reviews(self):
-        reviews_csv_path = os.path.join(self.CSV_DIRECTORY, self.CSV_FILES['reviews'])
+        reviews_csv_path = os.path.join(
+            self.CSV_DIRECTORY, self.CSV_FILES['reviews'])
         with open(reviews_csv_path, 'r') as reviews_file:
             csv_reader = csv.DictReader(reviews_file)
             reviews_to_create = []
@@ -123,10 +134,12 @@ class Command(BaseCommand):
                     pub_date=row['pub_date']
                 ))
             Review.objects.bulk_create(reviews_to_create)
-        self.stdout.write(self.style.SUCCESS('Reviews data imported successfully'))
+        self.stdout.write(self.style.SUCCESS(
+            'Reviews data imported successfully'))
 
     def import_comments(self):
-        comments_csv_path = os.path.join(self.CSV_DIRECTORY, self.CSV_FILES['comments'])
+        comments_csv_path = os.path.join(
+            self.CSV_DIRECTORY, self.CSV_FILES['comments'])
         with open(comments_csv_path, 'r') as comments_file:
             csv_reader = csv.DictReader(comments_file)
             comments_to_create = []
@@ -139,5 +152,5 @@ class Command(BaseCommand):
                     pub_date=row['pub_date']
                 ))
             Comment.objects.bulk_create(comments_to_create)
-        self.stdout.write(self.style.SUCCESS('Comments data imported successfully'))
-
+        self.stdout.write(self.style.SUCCESS(
+            'Comments data imported successfully'))
