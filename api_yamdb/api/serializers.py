@@ -12,6 +12,7 @@ def check_username_exists(username):
 
     Если пользователя не существует, выбрасывает Http404.
     """
+
     try:
         User.objects.get(username__iexact=username)
     except User.DoesNotExist:
@@ -24,6 +25,7 @@ def check_username_email_pair(username, email):
     Если email не соответствует заданному пользователю,
     выбрасывает ValidationError.
     """
+    
     try:
         user = User.objects.get(username__iexact=username)
     except User.DoesNotExist:
@@ -49,7 +51,7 @@ class SignUpSerializer(serializers.ModelSerializer):
 
     def validate(self, data):
         """Общая проверка валидности данных."""
-        if User.objects.filter(username=data['username']).exists():
+        if User.objects.filter(username__iexact=data['username']).exists():
             check_username_email_pair(data['username'], data['email'])
         return data
 
