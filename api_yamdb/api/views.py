@@ -80,9 +80,9 @@ class EmailActivation(APIView):
         serializer = EmailActivationSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         try:
-            user = User.objects.get(
+         user = User.objects.get(
                     username__iexact=serializer.validated_data['username']
-            )
+                )
         except User.DoesNotExist:
             raise ValidationError({"Ошибка": 'Пользователь не найден'})
         token = get_token(user)

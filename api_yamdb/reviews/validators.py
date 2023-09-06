@@ -10,4 +10,3 @@ def valildate_year(value):
             f'Введенное значение года ({value})'
             f'не может быть больше {current_year}'
         )
-
