@@ -95,36 +95,35 @@ class UserViewSet(viewsets.ModelViewSet):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-class CategoryViewSet(
-    viewsets.GenericViewSet, mixins.ListModelMixin,
-    mixins.CreateModelMixin, mixins.DestroyModelMixin,
+class CategoryGenreBaseViewSet(
+        viewsets.GenericViewSet, mixins.ListModelMixin,
+        mixins.CreateModelMixin, mixins.DestroyModelMixin,
 ):
+    """
+    Базовое представление для управления категориями и жанрами.
+    """
+    permission_classes = (AdminOrReadOnly,)
+    filter_backends = (SearchFilter,)
+    lookup_field = 'slug'
+    search_fields = ('name',)
+
+
+class CategoryViewSet(CategoryGenreBaseViewSet):
     """
     Представление для управления категориями.
     Позволяет просматривать, создавать и удалять категории.
     """
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
-    permission_classes = (AdminOrReadOnly,)
-    filter_backends = (SearchFilter,)
-    lookup_field = 'slug'
-    search_fields = ('name',)
 
 
-class GenreViewSet(
-    viewsets.GenericViewSet, mixins.ListModelMixin,
-    mixins.CreateModelMixin, mixins.DestroyModelMixin,
-):
+class GenreViewSet(CategoryGenreBaseViewSet):
     """
     Представление для управления жанрами.
     Позволяет просматривать, создавать и удалять жанры.
     """
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
-    permission_classes = (AdminOrReadOnly,)
-    filter_backends = (SearchFilter,)
-    lookup_field = 'slug'
-    search_fields = ('name',)
 
 
 class TitleViewSet(viewsets.ModelViewSet):
@@ -145,22 +144,6 @@ class TitleViewSet(viewsets.ModelViewSet):
         if self.action in ('list', 'retrieve'):
             return TitleReadSerializer
         return TitleSerializer
-
-    def update(self, request, *args, **kwargs):
-        instance = self.get_object()
-        serializer = self.get_serializer(
-            instance, data=request.data, partial=True
-        )
-        serializer.is_valid(raise_exception=True)
-
-        if len(serializer.validated_data.get('name', '')) > 256:
-            raise ValidationError('Name cannot be longer than 256 characters.')
-
-        self.perform_update(serializer)
-        return Response(serializer.data)
-
-    def partial_update(self, request, *args, **kwargs):
-        return super().partial_update(request, *args, **kwargs)
 
 
 class ReviewViewSet(viewsets.ModelViewSet):

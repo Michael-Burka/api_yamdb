@@ -127,6 +127,11 @@ class TitleSerializer(serializers.ModelSerializer):
         fields = ('id', 'name', 'year', 'description', 'genre', 'category')
         model = Title
 
+    def validate_name(self, value):
+        if len(value) > 256:
+            raise serializers.ValidationError('Name cannot be longer than 256 characters.')
+        return value
+
 
 class TitleReadSerializer(serializers.ModelSerializer):
     genre = GenreSerializer(many=True)
