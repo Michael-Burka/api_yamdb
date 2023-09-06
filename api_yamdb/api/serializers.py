@@ -28,6 +28,7 @@ def check_username_email_pair(username, email):
 
 
 class CurrentTitleDefault(serializers.CurrentUserDefault):
+    """Значение по умолчанию для поля title."""
 
     def __call__(self, serializer_field):
         return serializer_field.context['view'].kwargs.get('title_id')
