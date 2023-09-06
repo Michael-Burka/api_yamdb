@@ -1,7 +1,6 @@
 from django.core.exceptions import ValidationError
 from django.http import Http404
-from django.shortcuts import get_object_or_404
-from rest_framework import serializers
+from rest_framework import serializers, validators
 
 from reviews.models import Category, Comment, Genre, Review, Title
 from users.models import ROLE_CHOICES, User
@@ -32,6 +31,12 @@ def check_username_email_pair(username, email):
         raise ValidationError({"message": "Username не существует"})
     if user.email != email:
         raise ValidationError({"message": "Неверный email"})
+
+
+class CurrentTitleDefault(serializers.CurrentUserDefault):
+    """Значение по умолчанию для поля title."""
+    def __call__(self, serializer_field):
+        return serializer_field.context['view'].kwargs.get('title_id')
 
 
 class SignUpSerializer(serializers.ModelSerializer):
@@ -135,7 +140,8 @@ class TitleSerializer(serializers.ModelSerializer):
 
     def validate_name(self, value):
         if len(value) > 256:
-            raise serializers.ValidationError('Name cannot be longer than 256 characters.')
+            raise serializers.ValidationError(
+                'Name cannot be longer than 256 characters.')
         return value
 
 
@@ -159,34 +165,25 @@ class TitleReadSerializer(serializers.ModelSerializer):
 
 
 class ReviewSerializer(serializers.ModelSerializer):
-    author = serializers.SlugRelatedField(
-        slug_field='username',
+    author = serializers.StringRelatedField(
         read_only=True,
-        default=serializers.CurrentUserDefault())
-
-    score = serializers.IntegerField(
-        min_value=1,
-        max_value=10,
+        default=serializers.CurrentUserDefault()
+    )
+    title = serializers.StringRelatedField(
+        read_only=True,
+        default=CurrentTitleDefault()
     )
 
     class Meta:
-        fields = ('id', 'text', 'author', 'score', 'pub_date')
+        fields = ('id', 'text', 'author', 'title', 'score', 'pub_date')
         model = Review
-
-    def validate(self, data):
-        if self.context['request'].method != 'POST':
-            return data
-        author = self.context['request'].user
-        title = get_object_or_404(
-            Title,
-            id=self.context['view'].kwargs.get('title_id')
-        )
-        if Review.objects.filter(
-                author=author, title=title).exists():
-            raise serializers.ValidationError(
-                'Вы уже написали отзыв к этому произведению!'
-            )
-        return data
+        validators = [
+            validators.UniqueTogetherValidator(
+                queryset=Review.objects.all(),
+                fields=('title', 'author'),
+                message='Вы уже написали отзыв к этому произведению!'
+            ),
+        ]
 
 
 class CommentSerializer(serializers.ModelSerializer):
