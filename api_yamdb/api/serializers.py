@@ -1,9 +1,9 @@
-from django.core.exceptions import ValidationError
 from django.http import Http404
+from django.core.exceptions import ValidationError
 from rest_framework import serializers, validators
 
-from reviews.models import Category, Comment, Genre, Review, Title
 from users.models import ROLE_CHOICES, User
+from reviews.models import Category, Comment, Genre, Review, Title
 
 
 def check_username_exists(username):
@@ -24,7 +24,7 @@ def check_username_email_pair(username, email):
     Если email не соответствует заданному пользователю,
     выбрасывает ValidationError.
     """
-    
+
     try:
         user = User.objects.get(username__iexact=username)
     except User.DoesNotExist:
@@ -152,13 +152,8 @@ class TitleReadSerializer(serializers.ModelSerializer):
 
     class Meta:
         fields = (
-            'id',
-            'name',
-            'year',
-            'description',
-            'genre',
-            'category',
-            'rating',
+            'id', 'name', 'year', 'description',
+            'genre', 'category', 'rating',
         )
         read_only_fields = fields
         model = Title
