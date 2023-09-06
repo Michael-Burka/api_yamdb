@@ -24,11 +24,23 @@ from users.models import User
 
 
 class SignUp(APIView):
-    """Представление для регистрации новых пользователей."""
-    permission_classes = (permissions.AllowAny,)  # доступ для всех
+    """
+    Класс для регистрации новых пользователей.
+    ...
+    Атрибуты
+    --------
+    permission_classes : tuple
+        классы разрешений для доступа к представлению
+
+    Методы
+    ------
+    post(request):
+        Регистрирует нового пользователя и отправляет код подтверждения.
+    """
+
+    permission_classes = (permissions.AllowAny,)
 
     def post(self, request):
-        """Регистрирует нового пользователя и отправляет код подтверждения."""
         serializer = SignUpSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         try:
@@ -48,25 +60,69 @@ class SignUp(APIView):
 
 
 class EmailActivation(APIView):
-    """Представление для активации электронной почты пользователя."""
+    """
+    Класс для активации электронной почты пользователя.
+    ...
+    Атрибуты
+    --------
+    permission_classes : tuple
+        классы разрешений для доступа к представлению
+
+    Методы
+    ------
+    post(request):
+        Проверяет код подтверждения и генерирует токен.
+    """
+
     permission_classes = (permissions.AllowAny,)
 
     def post(self, request):
-        """Проверяет код подтверждения и генерирует токен."""
         serializer = EmailActivationSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        user = User.objects.get(
-            username=serializer.validated_data['username'])
+        try:
+            user = User.objects.get(username__iexact=serializer.validated_data['username'])
+        except User.DoesNotExist:
+            raise ValidationError({"Ошибка": 'Пользователь не найден'})
         token = get_token(user)
         return Response({'token': token},
                         status=status.HTTP_201_CREATED)
 
 
 class UserViewSet(viewsets.ModelViewSet):
-    """Представление для управления пользователями."""
+    """
+    Класс для управления пользователями.
+    ...
+    Атрибуты
+    --------
+    queryset : QuerySet
+        набор данных всех пользователей
+    serializer_class : Serializer
+        класс сериализатора для управления пользователями
+    permission_classes : tuple
+        классы разрешений для доступа к представлению
+    filter_backends : tuple
+        классы фильтрации для запросов
+    lookup_field : str
+        поле для поиска пользователя
+    search_fields : tuple
+        поля для поиска
+    http_method_names : list
+        поддерживаемые HTTP-методы
+
+    Методы
+    ------
+    my_profile(request):
+        Позволяет просматривать и редактировать свой профиль.
+        Доступно только аутентифицированным пользователям.
+
+    activate_email(request):
+        Активирует электронную почту пользователя после проверки
+        кода подтверждения.
+        Доступно всем пользователям.
+    """
+
     queryset = User.objects.all()
     serializer_class = AdminSerializer
-    # Только администраторы могут изменять данные.
     permission_classes = (AdminWriteOnly,)
     filter_backends = (SearchFilter,)
     lookup_field = 'username'
@@ -79,10 +135,6 @@ class UserViewSet(viewsets.ModelViewSet):
         permission_classes=(permissions.IsAuthenticated,)
     )
     def my_profile(self, request):
-        """
-        Позволяет просматривать и редактировать свой профиль.
-        Доступно только аутентифицированным пользователям.
-        """
         serializer = UserProfileSerializer(request.user)
         if request.method == 'PATCH':
             # При PATCH-запросе профиль можно частично обновить.
