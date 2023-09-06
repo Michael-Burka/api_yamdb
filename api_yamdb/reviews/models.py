@@ -1,7 +1,7 @@
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 
-from reviews.validators import validate_slug, valildate_year
+from reviews.validators import valildate_year
 from users.models import User
 
 SLUG_MAX_LENGTH = 50
@@ -19,15 +19,15 @@ class Category(models.Model):
         verbose_name='Слаг категории',
         unique=True,
         help_text='Введите слаг категории',
-        validators=[validate_slug],
+        db_index=True,
     )
-
-    def __str__(self) -> str:
-        return self.name
 
     class Meta:
         verbose_name = 'Категория'
         verbose_name_plural = 'Категории'
+
+    def __str__(self) -> str:
+        return self.name
 
 
 class Genre(models.Model):
@@ -41,15 +41,15 @@ class Genre(models.Model):
         verbose_name='Слаг жанра',
         unique=True,
         help_text='Введите слаг жанра',
-        validators=[validate_slug],
+        db_index=True,
     )
-
-    def __str__(self) -> str:
-        return self.name
 
     class Meta:
         verbose_name = 'Жанр'
         verbose_name_plural = 'Жанры'
+
+    def __str__(self) -> str:
+        return self.name
 
 
 class Title(models.Model):
