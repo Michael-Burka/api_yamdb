@@ -12,7 +12,9 @@ def check_username_exists(username):
 
     Если пользователя не существует, выбрасывает Http404.
     """
-    if not User.objects.filter(username=username).exists():
+    try:
+        User.objects.get(username__iexact=username)
+    except User.DoesNotExist:
         raise Http404(f'Пользователь `{username}` не найден.')
 
 
@@ -22,8 +24,10 @@ def check_username_email_pair(username, email):
     Если email не соответствует заданному пользователю,
     выбрасывает ValidationError.
     """
-
-    user = User.objects.get(username=username)
+    try:
+        user = User.objects.get(username__iexact=username)
+    except User.DoesNotExist:
+        raise ValidationError({"message": "Username не существует"})
     if user.email != email:
         raise ValidationError({"message": "Неверный email"})
 
@@ -66,12 +70,12 @@ class EmailActivationSerializer(serializers.ModelSerializer):
 
     def validate(self, data):
         """Проверка кода активации."""
-        user = User.objects.get(username=data['username'])
+        try:
+            user = User.objects.get(username__iexact=data['username'])
+        except User.DoesNotExist:
+            raise ValidationError({"Ошибка": 'Пользователь не найден'})
         if data['confirmation_code'] != user.confirmation_code:
-            raise ValidationError(
-                {"Ошибка": 'Неверный код подтверждения'}
-            )
-        return data
+            raise ValidationError({"Ошибка": 'Неверный код подтверждения'})
 
 
 class AdminSerializer(serializers.ModelSerializer):
