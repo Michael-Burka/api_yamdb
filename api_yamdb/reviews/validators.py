@@ -1,7 +1,7 @@
-import re
 from datetime import datetime
 
 from django.core.exceptions import ValidationError
+
 
 def valildate_year(value):
     current_year = datetime.now().year
