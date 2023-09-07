@@ -85,13 +85,13 @@ class Title(models.Model):
         help_text='Выберите жанр произведения',
         through='GenreTitle',
     )
-
-    def __str__(self) -> str:
-        return self.name
-
+    
     class Meta:
         verbose_name = 'Произведение'
         verbose_name_plural = 'Произведения'
+
+    def __str__(self) -> str:
+        return self.name
 
 
 class GenreTitle(models.Model):
@@ -131,10 +131,7 @@ class Review(models.Model):
         verbose_name='Дата публикации',
         auto_now_add=True,
     )
-
-    def __str__(self) -> str:
-        return self.text[:10]
-
+    
     class Meta:
         verbose_name = 'Отзыв'
         verbose_name_plural = 'Отзывы'
@@ -144,6 +141,9 @@ class Review(models.Model):
                 name='unique_author_title_review',
             )
         ]
+
+    def __str__(self) -> str:
+        return self.text[:10]
 
 
 class Comment(models.Model):
@@ -168,9 +168,10 @@ class Comment(models.Model):
         db_index=True
     )
 
-    def __str__(self) -> str:
-        return self.text[:10]
-
     class Meta:
         verbose_name = 'Комментарий'
         verbose_name_plural = 'Комментарии'
+    
+    def __str__(self) -> str:
+        return self.text[:10]
+
