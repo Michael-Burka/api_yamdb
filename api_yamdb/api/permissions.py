@@ -5,9 +5,8 @@ class AdminWriteOnly(permissions.BasePermission):
     """Изменение доступно только администратору."""
 
     def has_permission(self, request, view):
-        return (
-            request.user.is_authenticated
-            and (request.user.is_superuser or request.user.is_admin)
+        return request.user.is_authenticated and (
+            request.user.is_superuser or request.user.is_admin
         )
 
 
@@ -28,8 +27,8 @@ class AdminOrReadOnly(AdminWriteOnly):
     Доступ на запись только для администратора.
     Для остальных - только чтение.
     """
+
     def has_permission(self, request, view):
-        return (
-            request.method in permissions.SAFE_METHODS
-            or super().has_permission(request, view)
+        return request.method in permissions.SAFE_METHODS or super().has_permission(
+            request, view
         )
