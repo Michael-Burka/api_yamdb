@@ -1,7 +1,3 @@
-#Absolutely! Based on the structure and styling of the given `README.md` for "Kittygram", here's a revised version of your "YaMDb" project:
-
----
-
 # YaMDb: Python and Django Web Application Study Project
 
 ## Overview
