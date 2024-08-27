@@ -26,7 +26,7 @@ YaMDb is a study project that revolves around creating a platform where users ca
 - Emphasized user experience, enabling users to share, update, or delete their reviews effortlessly.
 - Integrated robust data management solutions ensuring data integrity and reliability.
 
-## How to Explore Kittygram
+## How to Explore YaMDb
 
 Clone the repository and navigate into it using the command line.
 ```
